@@ -1,0 +1,170 @@
+﻿@model IEnumerable<Employee>
+
+<!-- Bootstrap CSS -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="container mt-5">
+    <h2 class="mb-4">Employee Management</h2>
+
+    <button class="btn btn-primary mb-3" onclick="showAddModal()">Add New Employee</button>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Age</th>
+                <th>Salary</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="employeeTableBody">
+            @foreach (var employee in Model)
+            {
+                <tr id="employeeRow-@employee.Id">
+                    <td>@employee.Name</td>
+                    <td>@employee.Position</td>
+                    <td>@employee.Office</td>
+                    <td>@employee.Age</td>
+                    <td>@employee.Salary</td>
+                    <td>
+                        <button class="btn btn-info" onclick="showEditModal(@employee.Id)">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteEmployee(@employee.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for Add/Edit Employee -->
+<div class="modal fade" id="employeeModal" tabindex="-1" role="dialog" aria-labelledby="employeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employeeModalLabel">Add/Edit Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="employeeForm">
+                    <input type="hidden" id="employeeId" />
+                    <div class="form-group">
+                        <label for="employeeName">Name</label>
+                        <input type="text" class="form-control" id="employeeName" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="employeePosition">Position</label>
+                        <input type="text" class="form-control" id="employeePosition" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeOffice">Office</label>
+                        <input type="text" class="form-control" id="employeeOffice" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeAge">Age</label>
+                        <input type="number" class="form-control" id="employeeAge" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeSalary">Salary</label>
+                        <input type="number" class="form-control" id="employeeSalary" step="0.01" required />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEmployeeBtn" onclick="saveEmployee()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<script>
+    // Show Add Employee Modal
+    function showAddModal() {
+        $('#employeeForm')[0].reset();
+        $('#employeeId').val('');
+        $('#employeeModalLabel').text('Add Employee');
+        $('#employeeModal').modal('show');
+    }
+
+    // Show Edit Employee Modal and Populate Data
+    function showEditModal(id) {
+        $.get('/Employee/GetEmployee', { id: id }, function (employee) {
+            $('#employeeId').val(employee.id);
+            $('#employeeName').val(employee.name);
+            $('#employeePosition').val(employee.position);
+            $('#employeeOffice').val(employee.office);
+            $('#employeeAge').val(employee.age);
+            $('#employeeSalary').val(employee.salary);
+            $('#employeeModalLabel').text('Edit Employee');
+            $('#employeeModal').modal('show');
+        });
+    }
+
+    // Save Employee (Add or Edit)
+    function saveEmployee() {
+        var employee = {
+            Id: $('#employeeId').val(),
+            Name: $('#employeeName').val(),
+            Position: $('#employeePosition').val(),
+            Office: $('#employeeOffice').val(),
+            Age: $('#employeeAge').val(),
+            Salary: $('#employeeSalary').val()
+        };
+
+        if (employee.Id) {
+            // Update Employee
+            $.ajax({
+                url: '/Employee/Update',
+                type: 'POST',
+                data: employee,
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();  // Reload page to reflect changes
+                    } else {
+                        alert('Failed to update employee.');
+                    }
+                }
+            });
+        } else {
+            // Add New Employee
+            $.ajax({
+                url: '/Employee/Add',
+                type: 'POST',
+                data: employee,
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();  // Reload page to reflect changes
+                    } else {
+                        alert('Failed to add employee.');
+                    }
+                }
+            });
+        }
+    }
+
+    // Delete Employee
+    function deleteEmployee(id) {
+        if (confirm('Are you sure you want to delete this employee?')) {
+            $.ajax({
+                url: '/Employee/Delete',
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.success) {
+                        $('#employeeRow-' + id).remove();  // Remove employee row
+                    } else {
+                        alert('Failed to delete employee.');
+                    }
+                }
+            });
+        }
+    }
+</script>

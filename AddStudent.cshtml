@@ -1,0 +1,118 @@
+﻿@model CrudUsingDapperAndAjax.Models.Employee
+
+@{
+    ViewData["Title"] = "AddStudent";
+}
+
+<h1>AddStudent</h1>
+
+
+
+
+
+<div class="container mt-5">
+    <h2 class="mb-4">Employee Management</h2>
+
+    <button class="btn btn-primary mb-3" onclick="showAddModal()">Add New Employee</button>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Age</th>
+                <th>Salary</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="employeeTableBody">
+            @foreach (var employee in ViewBag.List)
+            {
+                <tr id="employeeRow-@employee.Id">
+                    <td>@employee.Name</td>
+                    <td>@employee.Position</td>
+                    <td>@employee.Office</td>
+                    <td>@employee.Age</td>
+                    <td>@employee.Salary</td>
+                 
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <!-- Previous button -->
+            @if (ViewBag.HasPrevious)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("AddStudent", new { page = ViewBag.CurrentPage - 1 })">Previous</a>
+                </li>
+            }
+
+            <!-- Show page numbers 1, 2, 3 -->
+            @for (int i = 1; i <= ViewBag.TotalPages && i <= 3; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("AddStudent", new { page = i })">@i</a>
+                </li>
+            }
+
+            <!-- Next button -->
+            @if (ViewBag.HasNext)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("AddStudent", new { page = ViewBag.CurrentPage + 1 })">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddStudent">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Position" class="control-label"></label>
+                <input asp-for="Position" class="form-control" />
+                <span asp-validation-for="Position" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Office" class="control-label"></label>
+                <input asp-for="Office" class="form-control" />
+                <span asp-validation-for="Office" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" class="form-control" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Salary" class="control-label"></label>
+                <input asp-for="Salary" class="form-control" />
+                <span asp-validation-for="Salary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
