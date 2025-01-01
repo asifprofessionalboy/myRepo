@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>EShop | Admin Dashboard</title>
+    <link href="~/admin/assets/css/vendor.min.css" rel="stylesheet">
+    <link href="~/admin/assets/css/app.min.css" rel="stylesheet">
+	<link href="~/admin/assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+
+
+	<div id="app" class="app">
+
+		<div id="header" class="app-header">
+
+			<div class="mobile-toggler">
+				<button type="button" class="menu-toggler" data-toggle="sidebar-mobile">
+					<span class="bar"></span>
+					<span class="bar"></span>
+				</button>
+			</div>
+
+
+			<div class="brand">
+				<div class="desktop-toggler">
+					<button type="button" class="menu-toggler" data-toggle="sidebar-minify">
+						<span class="bar"></span>
+						<span class="bar"></span>
+					</button>
+				</div>
+				<a href="index.html" class="brand-logo">
+					<img src="assets/img/logo.png" class="invert-dark" alt height="20">
+				</a>
+			</div>
+
+
+			<div class="menu">
+				<form class="menu-search" method="POST" name="header_search_form">
+					<div class="menu-search-icon"><i class="fa fa-search"></i></div>
+					<div class="menu-search-input">
+						<input type="text" class="form-control" placeholder="Search menu...">
+					</div>
+				</form>
+
+				<div class="menu-item dropdown">
+					<a href="#" data-bs-toggle="dropdown" data-display="static" class="menu-link">
+						<div class="menu-img online">
+							<img src="~/admin/assets/img/user/user.jpg" alt class="ms-100 mh-100 rounded-circle">
+						</div>
+						<div class="menu-text">
+							<span>Tasleem Kauser</span>
+						</div>
+					</a>
+					<div class="dropdown-menu dropdown-menu-end me-lg-3">
+						<a class="dropdown-item d-flex align-items-center" asp-action="" asp-controller="Home">
+							Edit Profile <i class="fa fa-user-circle fa-fw ms-auto text-body text-opacity-50"></i>
+						</a>
+
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item d-flex align-items-center" asp-action="Logout" asp-controller="Home">
+							Log Out <i class="fa fa-toggle-off fa-fw ms-auto text-body text-opacity-50"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+		<div id="sidebar" class="app-sidebar">
+
+			<div class="app-sidebar-content" data-scrollbar="true" data-height="100%">
+
+				<div class="menu">
+
+				
+					<div class="menu-item">
+						<a asp-action="Dashboard" asp-controller="Home" class="menu-link">
+							<span class="menu-icon"><i class="fa fa-qrcode"></i></span>
+							<span class="menu-text">Dashboard</span>
+						</a>
+					</div>
+
+					<div class="menu-item">
+						<a asp-action="OrderList" asp-controller="Home" class="menu-link">
+							<span class="menu-icon"><i class="fas fa-chart-pie fa-fw"></i></span>
+							<span class="menu-text">Orders</span>
+						</a>
+					</div>
+
+
+
+					<div class="menu-item has-sub">
+						<a href="#" class="menu-link">
+							<span class="menu-icon"><i class="fa fa-shopping-cart"></i></span>
+							<span class="menu-text">Category</span>
+							<span class="menu-caret"><b class="caret"></b></span>
+						</a>
+						<div class="menu-submenu" style="box-sizing: border-box; display: none;">
+							<div class="menu-item">
+
+								<a asp-action="ProductList" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">All Products</span>
+								</a>
+
+
+								<a asp-action="AddMob" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">Mobiles & Laptops</span>
+								</a>
+
+								<a asp-action="AddHome" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">Home & Appliances</span>
+								</a>
+
+								<a asp-action="AddOrganic" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">Organic Medcines</span>
+								</a>
+
+
+
+								<a asp-action="AddInOrganic" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">InOrganic Medicines</span>
+								</a>
+
+								<a asp-action="AddMensWear" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">Men's Wear</span>
+								</a>
+
+
+
+								<a asp-action="AddWomensWear" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">Women's Wear</span>
+								</a>
+
+
+
+								<a asp-action="AddMensCos" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">Men's Cosmotics</span>
+								</a>
+
+								<a asp-action="AddWomensCos" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">Women's Cosmotics</span>
+								</a>
+
+
+									<a asp-action="" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">Trending Products</span>
+								</a>
+
+
+								<a asp-action="" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"></span>
+									<span class="menu-text">Latest Products</span>
+								</a>
+							</div>
+
+						</div>
+					</div>
+
+
+
+
+
+					<div class="menu-item">
+						<a asp-action="UserList" asp-controller="Home" class="menu-link">
+							<span class="menu-icon"><i class="fa fa-user-circle"></i></span>
+							<span class="menu-text">Users</span>
+						</a>
+					</div>
+
+					<div class="menu-item">
+						<a asp-action="OptionList" asp-controller="Home" class="menu-link">
+							<span class="menu-icon"><i class="fa fa-globe"></i></span>
+							<span class="menu-text">Options</span>
+						</a>
+					</div>
+
+					<div class="menu-item has-sub">
+						<a href="#" class="menu-link">
+							<span class="menu-icon"><i class="fa fa-cog"></i></span>
+							<span class="menu-text">Settings</span>
+							<span class="menu-caret"><b class="caret"></b></span>
+						</a>
+						<div class="menu-submenu" style="box-sizing: border-box; display: none;">
+							<div class="menu-item">
+								<a asp-action="Logout" asp-controller="Home" class="menu-link">
+									<span class="menu-icon"><i class=" fa-solid fa-right-from-bracket"></i></span>
+									<span class="menu-text">Logout</span>
+								</a>
+							</div>
+						
+						</div>
+					</div>
+
+
+				
+
+				</div>
+
+			</div>
+
+
+			<button class="app-sidebar-mobile-backdrop" data-dismiss="sidebar-mobile"></button>
+
+		</div>
+
+
+		
+
+
+		<a href="#" data-click="scroll-top" class="btn-scroll-top fade"><i class="fa fa-arrow-up"></i></a>
+
+
+		<div class="theme-panel">
+			<a href="javascript:;" data-click="theme-panel-expand" class="theme-collapse-btn">
+				<i class="fa fa-cog"></i>
+			</a>
+			<div class="theme-panel-content">
+
+				<hr class="mb-0">
+				<div class="row mt-10px pt-3px">
+					<div class="col-9 control-label text-body-emphasis fw-bold">
+						<div>Click to Dark Mode</div>
+
+					</div>
+					<div class="col-3 d-flex">
+						<div class="form-check form-switch ms-auto mb-0 mt-2px">
+							<input type="checkbox" class="form-check-input" name="app-theme-dark-mode"
+								   id="appThemeDarkMode" value="1">
+							<label class="form-check-label" for="appThemeDarkMode">&nbsp;</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+		<div id="content" class="app-content">
+
+        @RenderBody()
+
+    </div>
+
+
+</div>
+
+
+    <script src="~/admin/assets/js/vendor.min.js"></script>
+
+    <script src="~/admin/assets/js/app.min.js"></script>
+
+
+
+	<script src="~/admin/assets/plugins/datatables.net/js/jquery.dataTables.min.js"></script>
+	<script src="~/admin/assets/plugins/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+	<script src="~/admin/assets/plugins/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+	<script src="~/admin/assets/plugins/datatables.net-buttons/js/buttons.html5.min.js"></script>
+	<script src="~/admin/assets/plugins/datatables.net-buttons/js/buttons.print.min.js"></script>
+	<script src="~/admin/assets/plugins/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+
+
+	<script src="~/admin/assets/plugins/table-plugins.demo.js"></script>
+
+
+
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-Y3Q0VGQKY3');
+    </script>
+	<script>
+		//alert("sss");
+		window.setTimeout(function () {
+			$(".alert").fadeTo(500, 0).slideUp(500, function () {
+				$(this).remove();
+			});
+		}, 3000);
+	</script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
