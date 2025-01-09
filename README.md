@@ -1,10 +1,69 @@
 
-Select Null as LocationCode,'All' as Location,0 as ord
+<button class="button">
+  <span>Open Gift 2</span>
+</button>  
 
-union select distinct w.LOC_OF_WORK as LocationCode,l.Location as Location,1 from App_WorkOrder_Reg
-w left join App_LocationMaster l on l.LocationCode=w.LOC_OF_WORK where w.V_CODE='17197' and w.LOC_OF_WORK is not null
+<button class="button">
+  <span>Open Gift 1</span>
+</button>
 
-union select distinct w.LocationCode as LocationCode,l.Location as Location,1 
-from App_AttendanceDetails w left join App_LocationMaster l on l.LocationCode=w.LocationCode where
-   w.VendorCode='17197' and DATEPART(month,Dates)='12' and DATEPART(YEAR,Dates)='2024' and w.LocationCode is not null 
-   order by ord, Location
+
+
+
+
+
+<div id="open" style="display:none">
+
+<div class='moon'>
+  <div class='crater1'></div>
+  <div class='crater2'></div>
+  <div class='crater3'></div>
+</div>
+<canvas id="canvas"></canvas>
+<div id="sea"></div>
+<div id="beach"></div>
+<img src="https://dl.dropbox.com/s/2k0mtrxc2dqurmh/jumping.png" alt="jumping-people" id="people" />
+
+
+<div id="merrywrap" class="merrywrap">
+  <div class="giftbox">
+    <div class="cover">
+      <div></div>
+    </div>
+    <div class="box"></div>
+      <div class="box"></div>
+  </div>
+  <div class="icons">
+    <div class="row"> 
+      <span>F</span>
+      <span>e</span>
+      <span>l</span>
+      <span>i</span>
+      <span>z</span>
+    </div>
+    <div class="row"> 
+      <span>C</span>
+      <span>u</span>
+      <span>m</span>
+      <span>p</span>
+      <span>l</span>
+      <span>e</span>
+      <span>a</span>
+      <span>ñ</span>
+      <span>o</span>
+      <span>s</span> 
+    </div>
+    <div class="row"> 
+      <span>E</span>
+      <span>d</span>
+      <span>g</span>
+      <span>y</span>
+   
+    </div>
+  </div>
+</div>
+
+<div id="video">
+</div>
+
+</div>
