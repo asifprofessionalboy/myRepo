@@ -1,69 +1,19 @@
+select W.LocationCode,newid() as ID,CAST(W.WeeklyAllowance AS float) as Weekly_allowance,W.WorkManSl,W.WorkManCategory,W.PFNo,W.ESINo,W.WorkManName,W.MonthWage,W.YearWage,
+W.AadharNo,W.VendorCode,W.VendorName,W.WorkOrderNo,W.TotPaymentDays,W.holiday,W.NetWagesAmt,W.BasicWages,W.DAWages,
 
-<button class="button">
-  <span>Open Gift 2</span>
-</button>  
+(select WR.DEPT_CODE from App_WorkOrder_Reg WR where WR.V_CODE = W.VendorCode and WR.WO_NO = W.WorkOrderNo) as Department,W.OtherAllow, isnull
 
-<button class="button">
-  <span>Open Gift 1</span>
-</button>
+( (Select  O.bank_statement_sl_no from App_Wages_BankStatement O where O.VendorCode = W.VendorCode and O.MonthWage = W.MonthWage and O.YearWage = W.YearWage
+and O.WorkOrderNo = W.WorkOrderNo and O.WorkManName = W.WorkManName and O.LocationCode=W.LocationCode and O.AadharNo=W.AadharNo  ) ,'') as bank_statement_sl_no,
 
+(Select O.Paid_Amount from App_Online_Wages_Details O where O.VendorCode = W.VendorCode and O.MonthWage = W.MonthWage and O.YearWage = W.YearWage and O.WorkOrderNo = W.WorkOrderNo 
+and O.WorkManName = W.WorkManName and O.LocationCode=W.LocationCode) as Paid_Amount, 
 
+(Select O.Unpaid_Amount from App_Online_Wages_Details O
+where O.VendorCode = W.VendorCode and O.MonthWage = W.MonthWage and O.YearWage = W.YearWage and O.WorkOrderNo = W.WorkOrderNo
+and O.WorkManName = W.WorkManName and O.LocationCode=W.LocationCode) as Unpaid_Amount,
 
-
-
-
-<div id="open" style="display:none">
-
-<div class='moon'>
-  <div class='crater1'></div>
-  <div class='crater2'></div>
-  <div class='crater3'></div>
-</div>
-<canvas id="canvas"></canvas>
-<div id="sea"></div>
-<div id="beach"></div>
-<img src="https://dl.dropbox.com/s/2k0mtrxc2dqurmh/jumping.png" alt="jumping-people" id="people" />
-
-
-<div id="merrywrap" class="merrywrap">
-  <div class="giftbox">
-    <div class="cover">
-      <div></div>
-    </div>
-    <div class="box"></div>
-      <div class="box"></div>
-  </div>
-  <div class="icons">
-    <div class="row"> 
-      <span>F</span>
-      <span>e</span>
-      <span>l</span>
-      <span>i</span>
-      <span>z</span>
-    </div>
-    <div class="row"> 
-      <span>C</span>
-      <span>u</span>
-      <span>m</span>
-      <span>p</span>
-      <span>l</span>
-      <span>e</span>
-      <span>a</span>
-      <span>ñ</span>
-      <span>o</span>
-      <span>s</span> 
-    </div>
-    <div class="row"> 
-      <span>E</span>
-      <span>d</span>
-      <span>g</span>
-      <span>y</span>
-   
-    </div>
-  </div>
-</div>
-
-<div id="video">
-</div>
-
-</div>
+(Select O.Total_Amount from App_Online_Wages_Details O
+where O.VendorCode = W.VendorCode and O.MonthWage = W.MonthWage and O.YearWage = W.YearWage and O.WorkOrderNo = W.WorkOrderNo
+and O.WorkManName = W.WorkManName and O.LocationCode=W.LocationCode) as Total_Amount,TotalWages,W.PFAmt,W.ESIAmt,W.OtherDeduAmt from App_WagesDetailsJharkhand W 
+where W.MonthWage = '11' and W.YearWage='2024' and W.VendorCode = '10482' order by W.WorkManName 
