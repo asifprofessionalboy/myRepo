@@ -1,19 +1,107 @@
-select W.LocationCode,newid() as ID,CAST(W.WeeklyAllowance AS float) as Weekly_allowance,W.WorkManSl,W.WorkManCategory,W.PFNo,W.ESINo,W.WorkManName,W.MonthWage,W.YearWage,
-W.AadharNo,W.VendorCode,W.VendorName,W.WorkOrderNo,W.TotPaymentDays,W.holiday,W.NetWagesAmt,W.BasicWages,W.DAWages,
+SELECT 
+    '202406' AS procMonth,
+    WO_NO,
+    -- Wage Details
+    (SELECT TOP 1 
+        CASE 
+            WHEN COUNT(*) > 0 THEN 'Y' 
+            ELSE 'N' 
+        END 
+     FROM App_Online_Wages_Details a1 
+     INNER JOIN App_Online_Wages a2 
+        ON a2.V_CODE = a1.VendorCode 
+        AND a2.PROC_MONTH = a1.PROC_MONTH 
+        AND a2.STATUS = 'Request Closed' 
+     WHERE a1.VendorCode = '11408' 
+       AND a1.WorkOrderNo = '2500011892' 
+       AND a1.PROC_MONTH = '202406') AS Wages,
+       
+    -- Wage Supplement Details
+    (SELECT TOP 1 
+        CASE 
+            WHEN COUNT(*) > 0 THEN 'Y' 
+            ELSE 'N' 
+        END 
+     FROM App_Online_Wages_Details_Supplement a1 
+     INNER JOIN App_Online_WagesSupplement a2 
+        ON a2.V_CODE = a1.VendorCode 
+        AND a2.PROC_MONTH = a1.PROC_MONTH 
+        AND a2.STATUS = 'Request Closed' 
+     WHERE a1.VendorCode = '11408' 
+       AND a1.WorkOrderNo = '2500011892' 
+       AND a1.PROC_MONTH = '202406') AS WageSupplement,
 
-(select WR.DEPT_CODE from App_WorkOrder_Reg WR where WR.V_CODE = W.VendorCode and WR.WO_NO = W.WorkOrderNo) as Department,W.OtherAllow, isnull
+    -- PF Details
+    (SELECT TOP 1 
+        CASE 
+            WHEN COUNT(*) > 0 THEN 'Y' 
+            ELSE 'N' 
+        END 
+     FROM App_PF_ESI_Details a1 
+     INNER JOIN App_PF_ESI_Summary a2 
+        ON a2.VendorCode = a1.VendorCode 
+        AND a2.PROC_MONTH = a1.PROC_MONTH 
+        AND a2.Status = 'Request Closed' 
+     WHERE a1.VendorCode = '11408' 
+       AND a1.WorkOrderNo = '2500011892' 
+       AND a1.PROC_MONTH = '202406') AS PF,
 
-( (Select  O.bank_statement_sl_no from App_Wages_BankStatement O where O.VendorCode = W.VendorCode and O.MonthWage = W.MonthWage and O.YearWage = W.YearWage
-and O.WorkOrderNo = W.WorkOrderNo and O.WorkManName = W.WorkManName and O.LocationCode=W.LocationCode and O.AadharNo=W.AadharNo  ) ,'') as bank_statement_sl_no,
+    -- PF Supplement Details
+    (SELECT TOP 1 
+        CASE 
+            WHEN COUNT(*) > 0 THEN 'Y' 
+            ELSE 'N' 
+        END 
+     FROM App_PF_ESI_Details_Supplement a1 
+     INNER JOIN App_PF_ESI_Summary_Supplement a2 
+        ON a2.VendorCode = a1.VendorCode 
+        AND a2.PROC_MONTH = a1.PROC_MONTH 
+        AND a2.Status = 'Request Closed' 
+     WHERE a1.VendorCode = '11408' 
+       AND a1.WorkOrderNo = '2500011892' 
+       AND a1.PROC_MONTH = '202406') AS PFSupplement,
 
-(Select O.Paid_Amount from App_Online_Wages_Details O where O.VendorCode = W.VendorCode and O.MonthWage = W.MonthWage and O.YearWage = W.YearWage and O.WorkOrderNo = W.WorkOrderNo 
-and O.WorkManName = W.WorkManName and O.LocationCode=W.LocationCode) as Paid_Amount, 
+    -- ESI Details
+    (SELECT TOP 1 
+        CASE 
+            WHEN COUNT(*) > 0 THEN 'Y' 
+            ELSE 'N' 
+        END 
+     FROM App_PF_ESI_Details a1 
+     INNER JOIN App_PF_ESI_Summary a2 
+        ON a2.VendorCode = a1.VendorCode 
+        AND a2.PROC_MONTH = a1.PROC_MONTH 
+        AND a2.Status = 'Request Closed' 
+     WHERE a1.VendorCode = '11408' 
+       AND a1.WorkOrderNo = '2500011892' 
+       AND a1.PROC_MONTH = '202406') AS ESI,
 
-(Select O.Unpaid_Amount from App_Online_Wages_Details O
-where O.VendorCode = W.VendorCode and O.MonthWage = W.MonthWage and O.YearWage = W.YearWage and O.WorkOrderNo = W.WorkOrderNo
-and O.WorkManName = W.WorkManName and O.LocationCode=W.LocationCode) as Unpaid_Amount,
+    -- ESI Supplement Details
+    (SELECT TOP 1 
+        CASE 
+            WHEN COUNT(*) > 0 THEN 'Y' 
+            ELSE 'N' 
+        END 
+     FROM App_PF_ESI_Details_Supplement a1 
+     INNER JOIN App_PF_ESI_Summary_Supplement a2 
+        ON a2.VendorCode = a1.VendorCode 
+        AND a2.PROC_MONTH = a1.PROC_MONTH 
+        AND a2.Status = 'Request Closed' 
+     WHERE a1.VendorCode = '11408' 
+       AND a1.WorkOrderNo = '2500011892' 
+       AND a1.PROC_MONTH = '202406') AS ESISupplement,
 
-(Select O.Total_Amount from App_Online_Wages_Details O
-where O.VendorCode = W.VendorCode and O.MonthWage = W.MonthWage and O.YearWage = W.YearWage and O.WorkOrderNo = W.WorkOrderNo
-and O.WorkManName = W.WorkManName and O.LocationCode=W.LocationCode) as Total_Amount,TotalWages,W.PFAmt,W.ESIAmt,W.OtherDeduAmt from App_WagesDetailsJharkhand W 
-where W.MonthWage = '11' and W.YearWage='2024' and W.VendorCode = '10482' order by W.WorkManName 
+    -- Labour License
+    (SELECT TOP 1 
+        CASE 
+            WHEN COUNT(*) > 0 THEN 'Y' 
+            ELSE 'N' 
+        END 
+     FROM App_LabourLicenseSubmission 
+     WHERE Vcode = '11408' 
+       AND CONVERT(INT, CONVERT(VARCHAR, DATEPART(YEAR, FromDate)) + CONVERT(VARCHAR, FORMAT(DATEPART(MONTH, FromDate), '00'))) <= '202406' 
+       AND CONVERT(INT, CONVERT(VARCHAR, DATEPART(YEAR, ToDate)) + CONVERT(VARCHAR, FORMAT(DATEPART(MONTH, ToDate), '00'))) >= '202406') AS LL
+FROM 
+    App_Vendorwodetails 
+WHERE 
+    WO_NO = '2500011892';
