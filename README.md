@@ -20,14 +20,14 @@ WITH AttendanceData AS (
         AD.WorkManSl AS WorkManSLNo,
         AD.WorkManName AS WorkManName,
         CASE 
-            WHEN (ML.EngagementType = AD.EngagementType AND AD.Present = ''True'') THEN ''P''
-            WHEN (ML.EngagementType = AD.EngagementType AND AD.Present = ''False'' AND AD.IsHoliday = ''True'') THEN ''H''
-            WHEN (ML.EngagementType = AD.EngagementType AND AD.Present = ''False'' AND AD.IsLeave = ''True'') THEN ''L''
-            ELSE ''A'' 
+            WHEN AD.DayDef = ''HD'' THEN ''H''  -- Holiday
+            WHEN AD.DayDef = ''LV'' THEN ''L''  -- Leave
+            WHEN AD.DayDef = ''P'' THEN ''P''  -- Present
+            ELSE ''A''                          -- Absent
         END AS Status,
-        CASE WHEN AD.IsHoliday = ''True'' THEN 1 ELSE 0 END AS Holiday,
-        CASE WHEN AD.IsLeave = ''True'' THEN 1 ELSE 0 END AS LeaveCount,
-        CASE WHEN AD.Present = ''True'' THEN 1 ELSE 0 END AS PresentCount,
+        CASE WHEN AD.DayDef = ''HD'' THEN 1 ELSE 0 END AS Holiday,
+        CASE WHEN AD.DayDef = ''LV'' THEN 1 ELSE 0 END AS LeaveCount,
+        CASE WHEN AD.DayDef = ''P'' THEN 1 ELSE 0 END AS PresentCount,
         1 AS TotalDays,
         AD.EngagementType AS Eng_Type,
         DATEPART(MONTH, ML.Dates) AS Month,
@@ -45,10 +45,10 @@ SELECT
     Month, 
     Year, 
     ' + @DynamicColumns + ',
-    SUM(Holiday) AS Holiday,
-    SUM(LeaveCount) AS Leave,
+    SUM(Holiday) AS TotalHolidays,
+    SUM(LeaveCount) AS TotalLeaves,
     SUM(PresentCount) AS TotalPresent,
-    SUM(TotalDays) AS Total
+    SUM(TotalDays) AS TotalDays
 FROM AttendanceData
 PIVOT (
     MAX(Status) FOR DayOfMonth IN (' + @DynamicColumns + ')
@@ -56,5 +56,5 @@ PIVOT (
 ORDER BY WorkManSLNo;
 ';
 
--- Step 3: Execute the dynamic SQL
+-- Step 3: Execute the SQL query
 EXEC sp_executesql @SQLQuery;
