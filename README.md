@@ -1,7 +1,6 @@
 DECLARE @DynamicColumns NVARCHAR(MAX);
 DECLARE @SQLQuery NVARCHAR(MAX);
 
--- Step 1: Generate dynamic column names for days
 SELECT @DynamicColumns = STRING_AGG(QUOTENAME(DayOfMonth), ',')
 FROM (
     SELECT DISTINCT DATEPART(DAY, ML.Dates) AS DayOfMonth
@@ -13,7 +12,6 @@ FROM (
         AND DATEPART(YEAR, AD.Dates) = '2024'
 ) AS Days;
 
--- Step 2: Build the main SQL query with additional calculations
 SET @SQLQuery = '
 WITH AttendanceData AS (
     SELECT 
@@ -43,11 +41,9 @@ SELECT
     Month,
     Year,
     ' + @DynamicColumns + ',
-    -- Calculate total holidays, leaves, and present days
     SUM(CASE WHEN DayDef = ''HD'' THEN 1 ELSE 0 END) AS Holiday,
     SUM(CASE WHEN DayDef = ''LV'' THEN 1 ELSE 0 END) AS Leave,
     SUM(CASE WHEN DayDef = ''P'' THEN 1 ELSE 0 END) AS TotalPresent,
-    -- Calculate total working days (present + leave + holidays)
     COUNT(*) AS Total
 FROM AttendanceData
 PIVOT (
@@ -58,5 +54,4 @@ GROUP BY WorkManSLNo, WorkManName, Eng_Type, Month, Year
 ORDER BY WorkManSLNo;
 ';
 
--- Execute the dynamic SQL query
 EXEC sp_executesql @SQLQuery;
