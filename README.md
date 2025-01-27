@@ -1,24 +1,60 @@
-   string str_exit_acc = str_exit.Substring(0, 10);
+DECLARE @DynamicColumns NVARCHAR(MAX);
+DECLARE @SQLQuery NVARCHAR(MAX);
 
+-- Step 1: Generate the dynamic column list for days of the month
+SELECT @DynamicColumns = STRING_AGG(QUOTENAME(DayOfMonth), ',') 
+FROM (
+    SELECT DISTINCT DATEPART(DAY, ML.Dates) AS DayOfMonth
+    FROM dbo.ListOfDaysByEngagementType('09', '2024') AS ML
+    LEFT JOIN App_AttendanceDetails AS AD ON ML.Dates = AD.Dates
+    WHERE AD.VendorCode = '17201'
+      AND DATEPART(MONTH, AD.Dates) = '09'
+      AND DATEPART(YEAR, AD.Dates) = '2024'
+) AS Days;
 
-input - 3/6/2024 12:00:00 AM
-output - 3/6/2024 1
-  
+-- Step 2: Create the dynamic SQL query
+SET @SQLQuery = '
+WITH AttendanceData AS (
+    SELECT 
+        DATEPART(DAY, ML.Dates) AS DayOfMonth,
+        AD.WorkManSl AS WorkManSLNo,
+        AD.WorkManName AS WorkManName,
+        CASE 
+            WHEN (ML.EngagementType = AD.EngagementType AND AD.Present = ''True'') THEN ''P''
+            WHEN (ML.EngagementType = AD.EngagementType AND AD.Present = ''False'' AND AD.IsHoliday = ''True'') THEN ''H''
+            WHEN (ML.EngagementType = AD.EngagementType AND AD.Present = ''False'' AND AD.IsLeave = ''True'') THEN ''L''
+            ELSE ''A'' 
+        END AS Status,
+        CASE WHEN AD.IsHoliday = ''True'' THEN 1 ELSE 0 END AS Holiday,
+        CASE WHEN AD.IsLeave = ''True'' THEN 1 ELSE 0 END AS LeaveCount,
+        CASE WHEN AD.Present = ''True'' THEN 1 ELSE 0 END AS PresentCount,
+        1 AS TotalDays,
+        AD.EngagementType AS Eng_Type,
+        DATEPART(MONTH, ML.Dates) AS Month,
+        DATEPART(YEAR, ML.Dates) AS Year
+    FROM dbo.ListOfDaysByEngagementType(''09'', ''2024'') AS ML
+    LEFT JOIN App_AttendanceDetails AS AD ON ML.Dates = AD.Dates
+    WHERE AD.VendorCode = ''17201''
+      AND DATEPART(MONTH, AD.Dates) = ''09''
+      AND DATEPART(YEAR, AD.Dates) = ''2024''
+)
+SELECT 
+    WorkManSLNo, 
+    WorkManName, 
+    Eng_Type, 
+    Month, 
+    Year, 
+    ' + @DynamicColumns + ',
+    SUM(Holiday) AS Holiday,
+    SUM(LeaveCount) AS Leave,
+    SUM(PresentCount) AS TotalPresent,
+    SUM(TotalDays) AS Total
+FROM AttendanceData
+PIVOT (
+    MAX(Status) FOR DayOfMonth IN (' + @DynamicColumns + ')
+) AS PivotTable
+ORDER BY WorkManSLNo;
+';
 
-
- DECLARE @DynamicColumns NVARCHAR(MAX); DECLARE @SQLQuery NVARCHAR(MAX);
-
- SELECT @DynamicColumns = STRING_AGG(QUOTENAME(DayOfMonth), ',') 
- FROM ( SELECT DISTINCT DATEPART(DAY, ML.Dates) AS DayOfMonth FROM dbo.ListOfDaysByEngagementType('09', '2024') AS ML LEFT JOIN 
- App_AttendanceDetails AS ad ON ML.Dates = AD.Dates WHERE AD.VendorCode = '17201' AND DATEPART(MONTH, AD.Dates) = '09' AND DATEPART(YEAR, AD.Dates) = '2024' 
- ) AS Days;
-
- SET @SQLQuery = ' WITH AttendanceData AS ( SELECT DATEPART(DAY, ML.Dates) AS DayOfMonth, ad.WorkManSl AS WorkManSLNo, ad.WorkManName AS WorkManName,
- CASE WHEN (ML.EngagementType = AD.EngagementType AND Present = ''True'') THEN ''P'' ELSE ''A'' END AS Present, ad.EngagementType AS Eng_Type, DATEPART(MONTH, ML.Dates) AS Month,
- DATEPART(YEAR, ML.Dates) AS Year FROM dbo.ListOfDaysByEngagementType(''09'', ''2024'') AS ML LEFT JOIN App_AttendanceDetails AS ad ON ML.Dates = AD.Dates
- WHERE AD.VendorCode = ''17201'' AND DATEPART(MONTH, AD.Dates) = ''09'' AND DATEPART(YEAR, AD.Dates) = ''2024''  )
-
-SELECT WorkManSLNo, WorkManName, Eng_Type, Month, Year, ' + @DynamicColumns + ' FROM AttendanceData PIVOT ( MAX(Present) FOR DayOfMonth IN (' + @DynamicColumns + ') )
-AS PivotTable ORDER BY WorkManSLNo; ';
- EXEC sp_executesql @SQLQuery; 
-i want 4 more columns holiday,leave,totalPresent and total
+-- Step 3: Execute the dynamic SQL
+EXEC sp_executesql @SQLQuery;
